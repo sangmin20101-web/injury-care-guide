@@ -1,6 +1,6 @@
 import streamlit as st
 
-# 1. 데이터 구조 (리스트 & 딕셔너리): 다친 부위별 금기 운동 및 위험도 정의
+# 1. 데이터 구조: 다친 부위별 금기 운동 및 위험도 정의
 forbidden_exercises = {
     "어깨": [
         {"운동명": "야구", "위험도": "상"},
@@ -39,9 +39,9 @@ forbidden_exercises = {
     ]
 }
 
-# 2. 함수 (def): 부위, 다친 정도, 부상 후 한 운동을 매개변수로 받아 분석하는 함수
+# 2. 함수: 부위, 다친 정도, 부상 후 한 운동 분석
 def analyze_injury(part, level, done_exercise):
-    # 기본 회복 기간 계산 (if-elif-else 조건문)
+    # 기본 회복 기간 계산 (if-elif-else)
     if level >= 20:
         days = 30
     elif level >= 15:
@@ -49,12 +49,39 @@ def analyze_injury(part, level, done_exercise):
     else:
         days = 7
 
-    # 해당 부위의 피해야 할 운동 리스트 가져오기
     exercises = forbidden_exercises[part]
-    
-    # 부상 후 한 운동이 금기 운동에 포함되는지 확인 (for 반복문 + if 조건문)
     extra_days = 0
-    matched_risk = None
-    
+    clean_input = done_exercise.strip()
+
+    # 부상 후 한 운동이 금기 운동인지 확인 (for + if)
     for item in exercises:
-        if done_exercise.strip() ==
+        name = item["운동명"]
+        risk = item["위험도"]
+        if clean_input == name:
+            if risk == "상":
+                extra_days = 14
+            elif risk == "중":
+                extra_days = 7
+            break
+
+    total_days = days + extra_days
+
+    # 경고 안내문 생성
+    names = [item["운동명"] for item in exercises[:3]]
+    joined_names = ", ".join(names)
+    warning_msg = f"{part} 부상 시 {joined_names} 등의 운동은 삼가해야 합니다."
+
+    # 테이블 출력용 데이터 변환 (for)
+    table_data = []
+    for item in exercises:
+        table_data.append({
+            "운동명": item["운동명"],
+            "위험도": item["위험도"]
+        })
+
+    return warning_msg, table_data, total_days, extra_days
+
+
+# 3. 화면 구성 (UI)
+st.title("🏥 다친 부위에 따른 금기 사항 및 기간")
+st.write("부상 부
