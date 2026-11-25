@@ -80,4 +80,4 @@ if st.button("분석하기"):
     st.warning(warning_msg)
     
     # 피해야 할 운동 테이블(표) 출력
-    st.write("**피해야 할 운동 목록
+    st.write("**피해야 할 운동 목록**")
