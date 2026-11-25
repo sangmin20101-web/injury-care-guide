@@ -1,7 +1,6 @@
 import streamlit as st
 
-# 1. 데이터 구조: 다친 부위별 금기 운동 및 위험도 정의
-forbidden_exercises = {
+data = {
     "어깨": [
         {"운동명": "야구", "위험도": "상"},
         {"운동명": "테니스", "위험도": "상"},
@@ -39,9 +38,7 @@ forbidden_exercises = {
     ]
 }
 
-# 2. 함수: 부위, 다친 정도, 부상 후 한 운동 분석
-def analyze_injury(part, level, done_exercise):
-    # 기본 회복 기간 계산 (if-elif-else)
+def check_injury(part, level, done):
     if level >= 20:
         days = 30
     elif level >= 15:
@@ -49,39 +46,45 @@ def analyze_injury(part, level, done_exercise):
     else:
         days = 7
 
-    exercises = forbidden_exercises[part]
-    extra_days = 0
-    clean_input = done_exercise.strip()
+    items = data[part]
+    extra = 0
+    user_ex = done.strip()
 
-    # 부상 후 한 운동이 금기 운동인지 확인 (for + if)
-    for item in exercises:
-        name = item["운동명"]
-        risk = item["위험도"]
-        if clean_input == name:
-            if risk == "상":
-                extra_days = 14
-            elif risk == "중":
-                extra_days = 7
+    for x in items:
+        if user_ex == x["운동명"]:
+            if x["위험도"] == "상":
+                extra = 14
+            elif x["위험도"] == "중":
+                extra = 7
             break
 
-    total_days = days + extra_days
+    total = days + extra
+    ex_list = [x["운동명"] for x in items[:3]]
+    msg = part + " 부상 시 " + ", ".join(ex_list) + " 등은 삼가야 합니다."
 
-    # 경고 안내문 생성
-    names = [item["운동명"] for item in exercises[:3]]
-    joined_names = ", ".join(names)
-    warning_msg = f"{part} 부상 시 {joined_names} 등의 운동은 삼가해야 합니다."
-
-    # 테이블 출력용 데이터 변환 (for)
-    table_data = []
-    for item in exercises:
-        table_data.append({
-            "운동명": item["운동명"],
-            "위험도": item["위험도"]
+    table = []
+    for x in items:
+        table.append({
+            "운동명": x["운동명"],
+            "위험도": x["위험도"]
         })
 
-    return warning_msg, table_data, total_days, extra_days
+    return msg, table, total, extra
 
+st.title("다친 부위별 금기 운동 안내")
+st.write("부위와 정도를 입력하면 피해야 할 운동과 기간을 알려줍니다.")
 
-# 3. 화면 구성 (UI)
-st.title("🏥 다친 부위에 따른 금기 사항 및 기간")
-st.write("부상 부
+part = st.selectbox("1) 다친 부위", list(data.keys()))
+level = st.slider("2) 다친 정도", 1, 25, 10)
+done = st.text_input("3) 부상 후 한 운동 (없으면 빈칸)", "")
+
+if st.button("분석하기"):
+    msg, table, total, extra = check_injury(part, level, done)
+    st.warning(msg)
+    st.write("피해야 할 운동 목록")
+    st.table(table)
+    st.write("다친 정도:", level)
+    if extra > 0:
+        st.write("권장 휴식 기간:", total, "일 (금기 운동 추가로 +", extra, "일)")
+    else:
+        st.write("권장 휴식 기간:", total, "일")
