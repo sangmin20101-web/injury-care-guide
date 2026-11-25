@@ -42,7 +42,6 @@ def analyze_injury(part, level, done_exercise):
             elif matched_risk == "중":
                 extra_days = 7   # 위험도 '중'이면 7일 추가
             break  # 일치하는 운동을 찾았으므로 반복 종료
-    # 피해야 할 운동이 아닌 다른 운동을 했거나 입력하지 않았으면 extra_days는 0 그대로 넘어감
 
     total_days = days + extra_days
 
@@ -68,4 +67,17 @@ st.write("부상 부위와 정도를 체크하여 피해야 할 운동과 권장
 # 입력 UI
 part = st.selectbox("1) 다친 부위 선택", ["어깨", "발목", "허리"])
 level = st.slider("2) 다친 정도", min_value=1, max_value=25, value=10)
-done_exercise = st
+done_exercise = st.text_input("3) 부상 후 한 운동 (없으면 비워두세요)", placeholder="예: 야구, 축구 등")
+
+# 분석 버튼 및 결과 출력
+if st.button("분석하기"):
+    warning_msg, table_data, total_days, extra_days, matched_risk = analyze_injury(part, level, done_exercise)
+    
+    st.divider()
+    st.subheader("📋 분석 결과")
+    
+    # 경고 안내문 출력
+    st.warning(warning_msg)
+    
+    # 피해야 할 운동 테이블(표) 출력
+    st.write("**피해야 할 운동 목록
