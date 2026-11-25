@@ -34,15 +34,13 @@ def analyze_injury(part, level, done_exercise):
     matched_risk = None
     
     for item in exercises:
-        # 입력한 운동이 금기 운동 목록에 있을 때만 위험도 확인 후 기간 추가
         if done_exercise.strip() == item["운동명"]:
             matched_risk = item["위험도"]
             if matched_risk == "상":
-                extra_days = 14  # 위험도 '상'이면 14일 추가
+                extra_days = 14
             elif matched_risk == "중":
-                extra_days = 7   # 위험도 '중'이면 7일 추가
-            break  # 일치하는 운동을 찾았으므로 반복 종료
-    # 피해야 할 운동이 아닌 다른 운동을 했거나 입력하지 않았으면 extra_days는 0 그대로 넘어감
+                extra_days = 7
+            break
 
     total_days = days + extra_days
 
@@ -68,11 +66,19 @@ st.write("부상 부위와 정도를 체크하여 피해야 할 운동과 권장
 # 입력 UI
 part = st.selectbox("1) 다친 부위 선택", ["어깨", "발목", "허리"])
 level = st.slider("2) 다친 정도", min_value=1, max_value=25, value=10)
-done_exercise = st.text_input(
-    "3) 다친 후에 한 운동이 있다면 입력하세요 (없거나 다른 운동이면 비워두거나 그대로 입력)",
-    placeholder="예: 야구, 축구, 산책 등"
-)
+done_exercise = st.text_input("3) 부상 후 이미 한 운동이 있다면 입력하세요 (없으면 비워두기)", "")
 
-# 분석하기 버튼 클릭 시 실행
+# 버튼 클릭 시 결과 출력
 if st.button("분석하기"):
-    warning_msg, table_data, total_days, extra_days, matched_risk = analyze_
+    warning_msg, table_data, total_days, extra_days, matched_risk = analyze_injury(part, level, done_exercise)
+    
+    st.warning(warning_msg)
+    
+    st.write("**피해야 할 운동 목록**")
+    st.table(table_data)
+    
+    st.write(f"**다친 정도:** {level}")
+    if extra_days > 0:
+        st.write(f"**권장 휴식 기간:** {total_days}일 (금기 운동 '{done_exercise}' 수행으로 +{extra_days}일 추가됨)")
+    else:
+        st.write(f"**권장 휴식 기간:** {total_days}일")
