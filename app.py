@@ -57,45 +57,4 @@ def analyze_injury(part, level, done_exercise):
     matched_risk = None
     
     for item in exercises:
-        if done_exercise.strip() == item["운동명"]:
-            matched_risk = item["위험도"]
-            if matched_risk == "상":
-                extra_days = 14
-            elif matched_risk == "중":
-                extra_days = 7
-            break
-
-    total_days = days + extra_days
-
-    # 경고 안내문 생성 (운동이 5개이므로 앞의 3개만 예시로 표시)
-    exercise_names = [item["운동명"] for item in exercises[:3]]
-    warning_msg = f"{part} 부상 시 {', '.join(exercise_names)} 등의 운동은 삼가해야 합니다."
-
-    # 테이블(표) 출력을 위한 데이터 변환 (for 반복문 활용)
-    table_data = []
-    for item in exercises:
-        table_data.append({
-            "운동명": item["운동명"],
-            "위험도": item["위험도"]
-        })
-
-    return warning_msg, table_data, total_days, extra_days, matched_risk
-
-
-# --- 3. 화면 구성 (UI) ---
-st.title("🏥 다친 부위에 따른 금기 사항 및 기간")
-st.write("부상 부위와 정도를 체크하여 피해야 할 운동과 권장 회복 기간을 안내합니다.")
-
-# 입력 UI (추가된 무릎, 손목도 드롭다운에 반영)
-part = st.selectbox("1) 다친 부위 선택", list(forbidden_exercises.keys()))
-level = st.slider("2) 다친 정도", min_value=1, max_value=25, value=10)
-done_exercise = st.text_input("3) 부상 후 이미 한 운동이 있다면 입력하세요 (없으면 비워두기)", "")
-
-# 버튼 클릭 시 결과 출력
-if st.button("분석하기"):
-    warning_msg, table_data, total_days, extra_days, matched_risk = analyze_injury(part, level, done_exercise)
-    
-    st.warning(warning_msg)
-    
-    st.write("**피해야 할 운동 목록**")
-    st.table(table_data)
+        if done_exercise.strip() ==
